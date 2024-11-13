@@ -3,7 +3,6 @@ package org.example;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -32,7 +31,7 @@ public class DatabaseService {
 
     public List<Employee> getAllEmployees() {
 
-        List<Employee> list = new ArrayList<>();
+        List<Employee> list;
         try {
             entityManager = entityManagerFactory.createEntityManager();
             list = entityManager.createQuery("SELECT e FROM Employee e", Employee.class).getResultList();
@@ -57,16 +56,31 @@ public class DatabaseService {
         }
     }
 
-    public void deleteEmployee(Employee employee) {
+    public void deleteEmployee(int id) {
         try {
             entityManager = entityManagerFactory.createEntityManager();
             entityManager.getTransaction().begin();
-            entityManager.remove(employee);
+            var employeeTemp = entityManager.find(Employee.class ,id);
+            entityManager.remove(employeeTemp);
             entityManager.getTransaction().commit();
         } finally {
             if (entityManager != null) {
                 entityManager.close();
             }
         }
+    }
+
+    public Employee getEmployeeById(int id) {
+        Employee employee = null;
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            entityManager.getTransaction().begin();
+            employee = entityManager.find(Employee.class, id);
+        } finally {
+            if (entityManager != null) {
+                entityManager.close();
+            }
+        }
+        return employee;
     }
 }
